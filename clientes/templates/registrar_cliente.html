@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}EcoFit - Registrar Cliente{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        background-image: linear-gradient(rgba(13, 17, 23, 0.75), rgba(13, 17, 23, 0.85)), url("{% static 'img/fondoParaRegistrarClientes.png' %}");
+    }
+</style>
+<h1 class="page-title">Registrar Nuevo Cliente</h1>
+<p class="page-subtitle">Ingresa los datos personales del cliente para agregarlo al sistema.</p>
+
+{% if error %}
+    <div class="alert alert-danger">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <span>{{ error }}</span>
+    </div>
+{% endif %}
+
+<div class="form-card">
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label class="form-label" for="nombre">Nombre Completo</label>
+            <input type="text" id="nombre" name="nombre" class="form-control" required placeholder="Ej. Juan Pérez" pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ ]+" title="Solo se permiten letras y espacios" pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ ]+" title="Solo se permiten letras y espacios">
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label" for="dni">DNI</label>
+            <input type="text" id="dni" name="dni" class="form-control" required placeholder="8 dígitos" maxlength="8" pattern="\d{8}" title="El DNI debe contener exactamente 8 números." pattern="\d{8}" title="El DNI debe tener exactamente 8 dígitos numéricos" oninput="this.value = this.value.replace(/[^0-9]/g, \'\')" pattern="\d{8}" title="El DNI debe tener exactamente 8 dígitos numéricos" oninput="this.value = this.value.replace(/[^0-9]/g, \'\')">
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label" for="correo">Correo Electrónico</label>
+            <input type="email" id="correo" name="correo" class="form-control" required placeholder="ejemplo@correo.com">
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label" for="telefono">Teléfono</label>
+            <input type="text" id="telefono" name="telefono" class="form-control" required placeholder="9 dígitos" maxlength="9" pattern="\d{9}" pattern="\d{9}" maxlength="9" title="El teléfono debe tener 9 dígitos numéricos" oninput="this.value = this.value.replace(/[^0-9]/g, \'\')" pattern="\d{9}" maxlength="9" title="El teléfono debe tener 9 dígitos numéricos" oninput="this.value = this.value.replace(/[^0-9]/g, \'\')">
+        </div>
+
+        <!-- Note: Membresia is no longer asked here, it will be assigned later in 'Membresías' module -->
+
+        <div class="flex gap-2" style="margin-top: 30px;">
+            <button type="submit" class="btn btn-primary" style="flex: 1;">
+                <i class="fa-solid fa-save"></i> Registrar
+            </button>
+            <a href="{% url 'menu_principal' %}" class="btn btn-secondary" style="flex: 1;">
+                <i class="fa-solid fa-xmark"></i> Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

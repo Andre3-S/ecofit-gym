@@ -1,0 +1,219 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoFit Gym - Acceso Profesional</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        html {
+            height: 100%;
+        }
+        body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            background: #111418;
+            font-family: 'Inter', sans-serif;
+        }
+        .split-left {
+            flex: 1;
+            background-image: linear-gradient(to right, rgba(17,20,24,0.7), rgba(17,20,24,0.9)), url("{% static 'img/fondo_login_nuevo.jpg' %}");
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 80px;
+            position: relative;
+        }
+        .badge-pro {
+            background: rgba(0, 230, 118, 0.1);
+            color: #00E676;
+            border: 1px solid rgba(0, 230, 118, 0.3);
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 25px;
+            display: inline-block;
+            width: fit-content;
+        }
+        .split-left h1 {
+            color: #fff;
+            font-family: 'Outfit', sans-serif;
+            font-size: 56px;
+            line-height: 1.1;
+            margin: 0 0 20px 0;
+        }
+        .split-left h1 span {
+            color: #ffc107; /* YELLOW */
+        }
+        .split-left p {
+            color: rgba(255,255,255,0.7);
+            font-size: 18px;
+            max-width: 500px;
+            margin: 0;
+            line-height: 1.6;
+        }
+        .metrics-bottom {
+            position: absolute;
+            bottom: 60px;
+            left: 80px;
+            display: flex;
+            gap: 50px;
+        }
+        .metric {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .metric-val { color: #00E676; font-family: 'Outfit', sans-serif; font-size: 28px; font-weight: 700; }
+        .metric-lbl { color: rgba(255,255,255,0.6); font-size: 12px; }
+        
+        .split-right {
+            width: 500px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            background: #111418;
+            position: relative;
+            box-sizing: border-box;
+        }
+        .login-card {
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        .logo-img {
+            max-width: 140px;
+            display: block;
+            margin: 0 auto 10px auto;
+            border-radius: 50%;
+            box-shadow: 0 0 30px rgba(255, 193, 7, 0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-label {
+            display: block;
+            color: rgba(255,255,255,0.7);
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+        .form-control {
+            width: 100%;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 14px;
+            color: #fff;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: #00E676;
+            background: rgba(0, 230, 118, 0.02);
+        }
+        .btn-primary {
+            width: 100%;
+            background: #00E676;
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            padding: 15px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: 0.2s;
+            margin-top: 10px;
+        }
+        .btn-primary:hover {
+            box-shadow: 0 0 15px rgba(0, 230, 118, 0.4);
+        }
+        .footer-text {
+            position: absolute;
+            bottom: 30px;
+            color: rgba(255,255,255,0.3);
+            font-size: 11px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="split-left">
+        <div class="badge-pro">SISTEMA PROFESIONAL DE GESTIÓN</div>
+        <h1>Transforma tu vida.<br><span>Sistema integral</span> de gestión<br>para gimnasios de alto<br>rendimiento.</h1>
+        <p>Controla membresías, asistencias, pagos y comunicación con tus clientes desde un solo lugar.</p>
+        
+        <div class="metrics-bottom">
+            <div class="metric">
+                <span class="metric-val">1,247</span>
+                <span class="metric-lbl">Clientes activos</span>
+            </div>
+            <div class="metric">
+                <span class="metric-val">98.2%</span>
+                <span class="metric-lbl">Retención mensual</span>
+            </div>
+            <div class="metric">
+                <span class="metric-val">S/ 48K</span>
+                <span class="metric-lbl">Facturación estimada</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="split-right">
+        <div class="login-card">
+            
+            <div style="text-align: center; margin-bottom: 40px;">
+                <img src="{% static 'img/logo_nuevo.jpg' %}" alt="EcoFit Logo" class="logo-img">
+                <h2 style="font-family: 'Outfit'; color: #fff; margin: 15px 0 0 0; font-size: 24px;">EcoFit Gym</h2>
+                <p style="color: rgba(255,255,255,0.5); font-size: 13px; margin: 5px 0 0 0;">Panel de Administración v2.0</p>
+            </div>
+
+            {% if error %}
+                <div style="background: rgba(255,68,68,0.1); border: 1px solid rgba(255,68,68,0.3); color: #ff4444; padding: 15px; border-radius: 8px; font-size: 13px; margin-bottom: 25px; text-align: center;">
+                    {{ error }}
+                </div>
+            {% endif %}
+
+            <form method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label class="form-label" for="username">Usuario</label>
+                    <input type="text" id="username" name="username" class="form-control" required placeholder="admin@ecofit.pe">
+                </div>
+                
+                <div class="form-group" style="margin-bottom: 25px;">
+                    <label class="form-label" for="password">Contraseña</label>
+                    <input type="password" id="password" name="password" class="form-control" required placeholder="••••••••">
+                </div>
+                
+                <button type="submit" class="btn-primary">
+                    Ingresar al Sistema
+                </button>
+            </form>
+            
+            <p style="text-align: center; margin-top: 25px; font-size: 12px; color: rgba(255,255,255,0.5);">
+                ¿Olvidaste tu contraseña? <a href="#" style="color: #00E676; text-decoration: none;">Recuperar acceso</a>
+            </p>
+        </div>
+        
+        <div class="footer-text">
+            &copy; 2026 EcoFit Gym 2.0 · Todos los derechos reservados
+        </div>
+    </div>
+
+</body>
+</html>

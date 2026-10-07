@@ -1,0 +1,411 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}EcoFit - Historial de Pagos{% endblock %}
+{% block breadcrumb %}Pagos{% endblock %}
+
+{% block content %}
+<style>
+    .page-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 32px;
+        color: #fff;
+        margin: 0;
+    }
+    .page-subtitle {
+        color: rgba(255,255,255,0.5);
+        font-size: 14px;
+        margin-bottom: 30px;
+    }
+    .header-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 30px;
+    }
+    .btn-new {
+        background: #00E676;
+        color: #000;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 14px;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: 0.2s;
+    }
+    .btn-new:hover {
+        background: #00c766;
+        box-shadow: 0 0 15px rgba(0, 230, 118, 0.4);
+    }
+    
+    .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    .metric-card {
+        background: rgba(28, 33, 40, 0.65);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255,255,255,0.05);
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    .metric-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 230, 118, 0.15);
+        border-color: rgba(0, 230, 118, 0.3);
+    }
+    .metric-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 2px;
+        background: #00E676;
+    }
+    .metric-title {
+        color: rgba(255,255,255,0.4);
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 15px;
+        display: block;
+    }
+    .metric-value {
+        font-size: 36px;
+        font-weight: 800;
+        color: #00E676;
+        margin-bottom: 8px;
+        font-family: 'Outfit';
+        line-height: 1;
+    }
+    .metric-subtitle {
+        color: rgba(255,255,255,0.4);
+        font-size: 12px;
+    }
+
+    /* Search and Filters */
+    .filters-container {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 20px;
+        background: rgba(28, 33, 40, 0.65);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255,255,255,0.05);
+        border-radius: 12px;
+        padding: 15px 20px;
+        flex-wrap: wrap;
+    }
+    .search-box {
+        flex: 1;
+        min-width: 250px;
+        display: flex;
+        align-items: center;
+        background: rgba(0,0,0,0.2);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 8px;
+        padding: 0 15px;
+        height: 40px;
+        transition: 0.3s;
+    }
+    .search-box:focus-within {
+        border-color: #00E676;
+        box-shadow: 0 0 10px rgba(0, 230, 118, 0.2);
+    }
+    .search-box input {
+        background: transparent;
+        border: none;
+        color: #fff;
+        width: 100%;
+        padding: 0 10px;
+        outline: none;
+        font-family: 'Inter', sans-serif;
+    }
+    .filter-btn {
+        background: transparent;
+        border: 1px solid rgba(255,255,255,0.1);
+        color: rgba(255,255,255,0.6);
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+    .filter-btn:hover {
+        background: rgba(255,255,255,0.05);
+        color: #fff;
+    }
+    .filter-btn.active {
+        background: rgba(0, 230, 118, 0.15);
+        color: #00E676;
+        border-color: #00E676;
+    }
+    .btn-export {
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
+        color: #fff;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.3s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .btn-export:hover {
+        background: rgba(255,255,255,0.1);
+    }
+    .btn-export.excel:hover { border-color: #22c55e; color: #22c55e; }
+    .btn-export.pdf:hover { border-color: #ef4444; color: #ef4444; }
+
+    .glass-panel {
+        background: rgba(28, 33, 40, 0.65);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255,255,255,0.05);
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    
+    .table-pagos {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .table-pagos th {
+        text-align: left;
+        color: rgba(255,255,255,0.3);
+        font-size: 11px;
+        text-transform: uppercase;
+        padding-bottom: 15px;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+    .table-pagos td {
+        padding: 18px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.02);
+        color: #fff;
+        font-size: 13px;
+        vertical-align: middle;
+    }
+    .table-pagos tbody tr {
+        transition: background 0.3s ease;
+    }
+    .table-pagos tbody tr:hover td {
+        background: rgba(255, 255, 255, 0.04);
+    }
+    
+    .avatar {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 14px;
+        color: #fff;
+    }
+    .avatar-0 { background: #eab308; color: #000; }
+    .avatar-1 { background: #22c55e; color: #000; }
+    .avatar-2 { background: #0ea5e9; color: #000; }
+    .avatar-3 { background: #3b82f6; }
+    .avatar-4 { background: #a855f7; }
+    .avatar-5 { background: #ef4444; }
+    .avatar-6 { background: #ec4899; }
+    .avatar-7 { background: #f97316; color: #000; }
+    .avatar-8 { background: #14b8a6; color: #000; }
+    .avatar-9 { background: #8b5cf6; }
+
+    .method-badge {
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .method-efectivo { background: rgba(34, 197, 94, 0.1); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.3); }
+    .method-yape { background: rgba(168, 85, 247, 0.1); color: #a855f7; border: 1px solid rgba(168, 85, 247, 0.3); }
+    .method-plin { background: rgba(59, 130, 246, 0.1); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.3); }
+    .method-tarjeta { background: rgba(249, 115, 22, 0.1); color: #f97316; border: 1px solid rgba(249, 115, 22, 0.3); }
+
+    .deuda-badge {
+        display: inline-block;
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+        padding: 4px 8px;
+        border-radius: 6px;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        margin-left: 10px;
+    }
+</style>
+
+<div class="header-actions">
+    <div>
+        <h1 class="page-title">Historial de Pagos</h1>
+        <p class="page-subtitle">Revisa todos los pagos, deudas pendientes y exporta tus reportes financieros.</p>
+    </div>
+    <a href="{% url 'registrar_pago' %}" class="btn-new">
+        <i class="fa-solid fa-plus"></i> Registrar Nuevo Pago
+    </a>
+</div>
+
+<div class="metrics-grid">
+    <div class="metric-card">
+        <span class="metric-title">Ingresos de Hoy</span>
+        <div class="metric-value">S/ {{ ingresos_hoy|floatformat:2 }}</div>
+        <span class="metric-subtitle">Caja del día en tiempo real</span>
+    </div>
+    <div class="metric-card">
+        <span class="metric-title">Método Favorito</span>
+        <div class="metric-value" style="color: #a855f7;">{{ metodo_nombre }}</div>
+        <span class="metric-subtitle">Más usado por clientes</span>
+    </div>
+    <div class="metric-card">
+        <span class="metric-title">Deudas Pendientes</span>
+        <div class="metric-value" style="color: #ef4444;">S/ {{ deuda_total|floatformat:2 }}</div>
+        <span class="metric-subtitle">Total por cobrar a clientes</span>
+    </div>
+</div>
+
+<div class="filters-container">
+    <div class="search-box">
+        <i class="fa-solid fa-magnifying-glass" style="color: rgba(255,255,255,0.4);"></i>
+        <input type="text" id="search-pago" placeholder="Buscar por nombre del cliente...">
+    </div>
+    <button class="filter-btn active" data-filter="Todos">Todos</button>
+    <button class="filter-btn" data-filter="Efectivo">Efectivo</button>
+    <button class="filter-btn" data-filter="Yape">Yape</button>
+    <button class="filter-btn" data-filter="Plin">Plin</button>
+    <button class="filter-btn" data-filter="Tarjeta">Tarjeta</button>
+    
+    <div style="flex: 1; display: flex; justify-content: flex-end; gap: 10px;">
+        <a href="{% url 'exportar_excel' %}" class="btn-export excel"><i class="fa-solid fa-file-excel"></i> Excel</a>
+        <a href="{% url 'exportar_pdf' %}" class="btn-export pdf"><i class="fa-solid fa-file-pdf"></i> PDF</a>
+    </div>
+</div>
+
+<div class="glass-panel">
+    <table class="table-pagos">
+        <thead>
+            <tr>
+                <th>CLIENTE</th>
+                <th>MEMBRESÍA</th>
+                <th>MONTO PAGADO</th>
+                <th>MÉTODO DE PAGO</th>
+                <th>FECHA Y HORA</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pago in pagos %}
+            <tr>
+                <td style="font-weight: 600;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div class="avatar avatar-{{ pago.cliente.id|add:0|stringformat:'s'|slice:'-1:' }}">
+                            {{ pago.cliente.nombre|make_list|first|upper }}
+                        </div>
+                        {{ pago.cliente.nombre|title }}
+                    </div>
+                </td>
+                <td style="color: rgba(255,255,255,0.7);">{{ pago.membresia.tipo }}</td>
+                <td>
+                    <div style="display: flex; align-items: center;">
+                        <span style="color: #00E676; font-weight: 700; font-size: 15px;">S/ {{ pago.monto }}</span>
+                        {% if pago.deuda and pago.deuda > 0 %}
+                            <span class="deuda-badge" title="Falta pagar este monto">Deuda: S/ {{ pago.deuda }}</span>
+                        {% endif %}
+                    </div>
+                </td>
+                <td>
+                    {% if pago.metodo_pago == 'Efectivo' %}
+                        <span class="method-badge method-efectivo"><i class="fa-solid fa-money-bill-wave"></i> Efectivo</span>
+                    {% elif pago.metodo_pago == 'Yape' %}
+                        <span class="method-badge method-yape"><i class="fa-solid fa-mobile-screen"></i> Yape</span>
+                    {% elif pago.metodo_pago == 'Plin' %}
+                        <span class="method-badge method-plin"><i class="fa-solid fa-mobile-screen"></i> Plin</span>
+                    {% else %}
+                        <span class="method-badge method-tarjeta"><i class="fa-regular fa-credit-card"></i> Tarjeta</span>
+                    {% endif %}
+                </td>
+                <td style="color: rgba(255,255,255,0.5);">{{ pago.fecha|date:"d M Y - H:i" }}</td>
+            </tr>
+            {% empty %}
+            <tr class="empty-row">
+                <td colspan="5" style="text-align: center; padding: 40px; color: rgba(255,255,255,0.3);">
+                    <i class="fa-solid fa-file-invoice-dollar" style="font-size: 32px; margin-bottom: 10px; display: block;"></i>
+                    No hay pagos registrados aún.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('search-pago');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const tableRows = document.querySelectorAll('.table-pagos tbody tr:not(.empty-row)');
+        
+        let currentFilter = 'Todos';
+        let currentSearch = '';
+
+        function filterTable() {
+            tableRows.forEach(row => {
+                const clientName = row.cells[0].textContent.toLowerCase();
+                const methodBadge = row.querySelector('.method-badge');
+                if (!methodBadge) return;
+                
+                // Extract method name (remove icon text if necessary, though textContent includes it)
+                const methodText = methodBadge.textContent.trim();
+                
+                const matchesSearch = clientName.includes(currentSearch);
+                const matchesMethod = currentFilter === 'Todos' || methodText.includes(currentFilter);
+                
+                if (matchesSearch && matchesMethod) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        searchInput.addEventListener('input', function(e) {
+            currentSearch = e.target.value.toLowerCase();
+            filterTable();
+        });
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentFilter = this.getAttribute('data-filter');
+                filterTable();
+            });
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}EcoFit - Registrar Pago{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        background-image: linear-gradient(rgba(13, 17, 23, 0.75), rgba(13, 17, 23, 0.85)), url("{% static 'img/fondoParaRegistrarClientes.png' %}");
+    }
+</style>
+<h1 class="page-title">Registrar Pago y Asignar Membresía</h1>
+<p class="page-subtitle">Ingresa los detalles del pago. Esto activará o renovará la membresía del cliente automáticamente.</p>
+
+{% if error %}
+    <div class="alert alert-danger">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <span>{{ error }}</span>
+    </div>
+{% endif %}
+
+<div class="form-card">
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label class="form-label" for="cliente">Seleccionar Cliente</label>
+            <select id="cliente" name="cliente" class="form-control" required>
+                <option value="" disabled selected>-- Elige un cliente --</option>
+                {% for cliente in clientes %}
+                    <option value="{{ cliente.id }}">{{ cliente.nombre|title }} - DNI: {{ cliente.dni }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px;">
+            <div class="form-group">
+                <label class="form-label" for="tipo_membresia">Tipo de Membresía / Promoción</label>
+                <select id="tipo_membresia" name="tipo_membresia" class="form-control" required>
+                    <option value="Básica">Básica</option>
+                    <option value="Premium">Premium</option>
+                    <option value="VIP">VIP</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="duracion_meses">Duración (Meses)</label>
+                <input type="number" id="duracion_meses" name="duracion_meses" class="form-control" required min="1" max="60" value="1" style="text-align: center; font-weight: bold; color: var(--primary);">
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <div style="display: flex; gap: 15px;">
+                <div style="flex: 1;">
+                    <label class="form-label" for="monto_total">Costo Total (S/)</label>
+                    <input type="number" id="monto_total" name="monto_total" class="form-control" required placeholder="Costo del plan" step="0.01" oninput="calcularDeuda()">
+                </div>
+                <div style="flex: 1;">
+                    <label class="form-label" for="monto">Monto Pagado Hoy (S/)</label>
+                    <input type="number" id="monto" name="monto" class="form-control" required placeholder="Lo que paga hoy" step="0.01" oninput="calcularDeuda()">
+                </div>
+            </div>
+            <div id="deuda-box" style="display: none; margin-top: 15px; padding: 10px; border-radius: 8px; font-weight: 600; font-size: 13px;"></div>
+            
+            <script>
+                function calcularDeuda() {
+                    let total = parseFloat(document.getElementById('monto_total').value) || 0;
+                    let pagado = parseFloat(document.getElementById('monto').value) || 0;
+                    let deuda = total - pagado;
+                    let box = document.getElementById('deuda-box');
+                    if (deuda > 0) {
+                        box.style.display = 'block';
+                        box.style.background = 'rgba(239, 68, 68, 0.1)';
+                        box.style.color = '#ef4444';
+                        box.style.border = '1px solid rgba(239, 68, 68, 0.3)';
+                        box.innerHTML = '⚠️ Saldo pendiente (Deuda): S/ ' + deuda.toFixed(2);
+                    } else if (deuda < 0) {
+                        box.style.display = 'block';
+                        box.style.background = 'rgba(234, 179, 8, 0.1)';
+                        box.style.color = '#eab308';
+                        box.style.border = '1px solid rgba(234, 179, 8, 0.3)';
+                        box.innerHTML = 'Vuelto a dar: S/ ' + Math.abs(deuda).toFixed(2);
+                    } else {
+                        box.style.display = 'none';
+                    }
+                }
+            </script>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label" for="metodo_pago">Método de Pago</label>
+            <select id="metodo_pago" name="metodo_pago" class="form-control" required>
+                <option value="Efectivo">Efectivo</option>
+                <option value="Yape">Yape</option>
+                <option value="Plin">Plin</option>
+                <option value="Tarjeta">Tarjeta</option>
+            </select>
+        </div>
+
+        <div class="flex gap-2" style="margin-top: 30px;">
+            <button type="submit" class="btn btn-primary" style="flex: 1;">
+                <i class="fa-solid fa-save"></i> Registrar Pago
+            </button>
+            <a href="{% url 'listar_pagos' %}" class="btn btn-secondary" style="flex: 1;">
+                <i class="fa-solid fa-xmark"></i> Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

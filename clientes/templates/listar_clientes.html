@@ -1,0 +1,632 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}EcoFit - Clientes
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    // Filtrado de tabla
+    document.addEventListener("DOMContentLoaded", function() {
+        const searchInput = document.getElementById("search-client");
+        const filterBtns = document.querySelectorAll(".filter-btn");
+        const rows = document.querySelectorAll(".table-clientes tbody tr");
+
+        let currentStatusFilter = "Todos";
+
+        function filterTable() {
+            const query = searchInput.value.toLowerCase();
+
+            rows.forEach(row => {
+                if(row.children.length === 1) return; // Empty message row
+
+                const textContent = row.textContent.toLowerCase();
+                const statusBadge = row.querySelector(".status-badge");
+                const statusText = statusBadge ? statusBadge.textContent.trim() : "";
+
+                const matchesSearch = textContent.includes(query);
+                let matchesStatus = true;
+                
+                if (currentStatusFilter === "Activo") {
+                    matchesStatus = (statusText === "Activo");
+                } else if (currentStatusFilter === "Vencido") {
+                    matchesStatus = (statusText === "Vencido");
+                }
+
+                if (matchesSearch && matchesStatus) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        }
+
+        searchInput.addEventListener("input", filterTable);
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener("click", function() {
+                // Remove active classes
+                filterBtns.forEach(b => {
+                    b.classList.remove("active");
+                });
+                // Add active to clicked
+                this.classList.add("active");
+                
+                currentStatusFilter = this.getAttribute("data-filter");
+                filterTable();
+            });
+        });
+    });
+
+    function confirmarEliminacion(url, nombre) {
+        Swal.fire({
+            title: '¿Eliminar Cliente?',
+            html: `<div style="color: rgba(255,255,255,0.7); font-size: 15px;">Estás a punto de borrar a:<br><span class="swal-item-highlight">${nombre}</span><br><br>Esta acción no se puede deshacer.</div>`,
+            icon: 'warning',
+            iconColor: '#ef4444',
+            showCancelButton: true,
+            backdrop: `rgba(0,0,0,0.85)`,
+            customClass: {
+                popup: 'swal-glass-popup',
+                title: 'swal-neon-title',
+                confirmButton: 'swal-btn-neon-red',
+                cancelButton: 'swal-btn-glass-cancel'
+            },
+            buttonsStyling: false,
+            confirmButtonText: '<i class="fa-solid fa-trash-can" style="margin-right: 8px;"></i> Sí, eliminar',
+            cancelButtonText: 'Cancelar',
+            showClass: { popup: 'animate__animated animate__zoomIn animate__faster' },
+            hideClass: { popup: 'animate__animated animate__zoomOut animate__faster' }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = url;
+            }
+        });
+    }
+
+        function verDetalles(nombre, dni, telefono, correo, plan, estado, exp) {
+        let colorEstado = estado === 'Activo' ? '#00E676' : (estado === 'Vencida' ? '#ef4444' : '#6b7280');
+        let badgeEstado = `<span style="background: ${colorEstado}15; color: ${colorEstado}; border: 1px solid ${colorEstado}40; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold;">${estado}</span>`;
+        let inicial = nombre.charAt(0).toUpperCase();
+
+        Swal.fire({
+            title: '¿Eliminar Cliente?',
+            html: `<div style="color: rgba(255,255,255,0.7); font-size: 15px;">Estás a punto de borrar a:<br><span class="swal-item-highlight">${inicial}</span><br><br>Esta acción no se puede deshacer.</div>`,
+            icon: 'warning',
+            iconColor: '#ef4444',
+            showCancelButton: true,
+            backdrop: `rgba(0,0,0,0.85)`,
+            customClass: {
+                popup: 'swal-glass-popup',
+                title: 'swal-neon-title',
+                confirmButton: 'swal-btn-neon-red',
+                cancelButton: 'swal-btn-glass-cancel'
+            },
+            buttonsStyling: false,
+            confirmButtonText: '<i class="fa-solid fa-trash-can" style="margin-right: 8px;"></i> Sí, eliminar',
+            cancelButtonText: 'Cancelar',
+            showClass: { popup: 'animate__animated animate__zoomIn animate__faster' },
+            hideClass: { popup: 'animate__animated animate__zoomOut animate__faster' }
+        });
+    }
+</script>
+{% endblock %}
+
+{% block breadcrumb %}Clientes
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    // Filtrado de tabla
+    document.addEventListener("DOMContentLoaded", function() {
+        const searchInput = document.getElementById("search-client");
+        const filterBtns = document.querySelectorAll(".filter-btn");
+        const rows = document.querySelectorAll(".table-clientes tbody tr");
+
+        let currentStatusFilter = "Todos";
+
+        function filterTable() {
+            const query = searchInput.value.toLowerCase();
+
+            rows.forEach(row => {
+                if(row.children.length === 1) return; // Empty message row
+
+                const textContent = row.textContent.toLowerCase();
+                const statusBadge = row.querySelector(".status-badge");
+                const statusText = statusBadge ? statusBadge.textContent.trim() : "";
+
+                const matchesSearch = textContent.includes(query);
+                let matchesStatus = true;
+                
+                if (currentStatusFilter === "Activo") {
+                    matchesStatus = (statusText === "Activo");
+                } else if (currentStatusFilter === "Vencido") {
+                    matchesStatus = (statusText === "Vencido");
+                }
+
+                if (matchesSearch && matchesStatus) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        }
+
+        searchInput.addEventListener("input", filterTable);
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener("click", function() {
+                // Remove active classes
+                filterBtns.forEach(b => {
+                    b.classList.remove("active");
+                });
+                // Add active to clicked
+                this.classList.add("active");
+                
+                currentStatusFilter = this.getAttribute("data-filter");
+                filterTable();
+            });
+        });
+    });
+
+    function confirmarEliminacion(url, nombre) {
+        Swal.fire({
+            title: '¿Eliminar Cliente?',
+            html: `<div style="color: rgba(255,255,255,0.7); font-size: 15px;">Estás a punto de borrar a:<br><span class="swal-item-highlight">${nombre}</span><br><br>Esta acción no se puede deshacer.</div>`,
+            icon: 'warning',
+            iconColor: '#ef4444',
+            showCancelButton: true,
+            backdrop: `rgba(0,0,0,0.85)`,
+            customClass: {
+                popup: 'swal-glass-popup',
+                title: 'swal-neon-title',
+                confirmButton: 'swal-btn-neon-red',
+                cancelButton: 'swal-btn-glass-cancel'
+            },
+            buttonsStyling: false,
+            confirmButtonText: '<i class="fa-solid fa-trash-can" style="margin-right: 8px;"></i> Sí, eliminar',
+            cancelButtonText: 'Cancelar',
+            showClass: { popup: 'animate__animated animate__zoomIn animate__faster' },
+            hideClass: { popup: 'animate__animated animate__zoomOut animate__faster' }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = url;
+            }
+        });
+    }
+
+        function verDetalles(nombre, dni, telefono, correo, plan, estado, exp) {
+        let colorEstado = estado === 'Activo' ? '#00E676' : (estado === 'Vencida' ? '#ef4444' : '#6b7280');
+        let badgeEstado = `<span style="background: ${colorEstado}15; color: ${colorEstado}; border: 1px solid ${colorEstado}40; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold;">${estado}</span>`;
+        let inicial = nombre.charAt(0).toUpperCase();
+
+        Swal.fire({
+            title: '¿Eliminar Cliente?',
+            html: `<div style="color: rgba(255,255,255,0.7); font-size: 15px;">Estás a punto de borrar a:<br><span class="swal-item-highlight">${inicial}</span><br><br>Esta acción no se puede deshacer.</div>`,
+            icon: 'warning',
+            iconColor: '#ef4444',
+            showCancelButton: true,
+            backdrop: `rgba(0,0,0,0.85)`,
+            customClass: {
+                popup: 'swal-glass-popup',
+                title: 'swal-neon-title',
+                confirmButton: 'swal-btn-neon-red',
+                cancelButton: 'swal-btn-glass-cancel'
+            },
+            buttonsStyling: false,
+            confirmButtonText: '<i class="fa-solid fa-trash-can" style="margin-right: 8px;"></i> Sí, eliminar',
+            cancelButtonText: 'Cancelar',
+            showClass: { popup: 'animate__animated animate__zoomIn animate__faster' },
+            hideClass: { popup: 'animate__animated animate__zoomOut animate__faster' }
+        });
+    }
+</script>
+{% endblock %}
+
+
+{% block content %}
+<style>
+    .page-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 32px;
+        color: #fff;
+        margin: 0;
+    }
+    .page-subtitle {
+        color: rgba(255,255,255,0.5);
+        font-size: 14px;
+        margin-bottom: 30px;
+    }
+    .header-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 30px;
+    }
+    .btn-new {
+        background: #00E676;
+        color: #000;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 14px;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: 0.2s;
+    }
+    .btn-new:hover {
+        background: #00c766;
+        box-shadow: 0 0 15px rgba(0, 230, 118, 0.4);
+    }
+    
+    .table-container {
+        background: rgba(28, 33, 40, 0.65);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255,255,255,0.05);
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    
+    .filters-bar {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 25px;
+        align-items: center;
+    }
+    .search-box {
+        background: rgba(0,0,0,0.2);
+        border: 1px solid rgba(255,255,255,0.1);
+        padding: 10px 15px;
+        border-radius: 8px;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 300px;
+    }
+    .search-box input {
+        background: transparent;
+        border: none;
+        color: #fff;
+        outline: none;
+        width: 100%;
+        font-family: 'Inter', sans-serif;
+    }
+    
+    .filter-btn {
+        background: transparent;
+        border: 1px solid rgba(255,255,255,0.1);
+        color: rgba(255,255,255,0.5);
+        padding: 8px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 13px;
+        transition: 0.2s;
+    }
+    .filter-btn.active.filter-green {
+        background: rgba(0, 230, 118, 0.1);
+        color: #00E676;
+        border-color: rgba(0, 230, 118, 0.3);
+    }
+    .filter-btn.active.filter-red {
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+        border-color: rgba(239, 68, 68, 0.3);
+    }
+
+    
+    .table-clientes {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .table-clientes th {
+        text-align: left;
+        color: rgba(255,255,255,0.3);
+        font-size: 11px;
+        text-transform: uppercase;
+        padding-bottom: 15px;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+    .table-clientes td {
+        padding: 18px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.02);
+        color: #fff;
+        font-size: 13px;
+        vertical-align: middle;
+    }
+    .table-clientes tr { transition: background 0.3s ease; }
+    .table-clientes tr:hover td { background: rgba(255, 255, 255, 0.04); }
+    
+    .client-profile {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-family: 'Outfit';
+        color: #fff;
+        font-size: 14px;
+    }
+    .avatar-0 { background: #eab308; color: #000; }
+    .avatar-1 { background: #22c55e; color: #000; }
+    .avatar-2 { background: #0ea5e9; color: #000; }
+    .avatar-3 { background: #3b82f6; }
+    .avatar-4 { background: #a855f7; }
+    .avatar-5 { background: #ef4444; }
+    .avatar-6 { background: #ec4899; }
+    .avatar-7 { background: #f97316; color: #000; }
+    .avatar-8 { background: #14b8a6; color: #000; }
+    .avatar-9 { background: #8b5cf6; }
+    
+    .status-badge {
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+    .status-activa {
+        background: rgba(0, 230, 118, 0.1);
+        color: #00E676;
+        border: 1px solid rgba(0, 230, 118, 0.3);
+    }
+    .status-vencida {
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+    .status-none {
+        background: rgba(255, 255, 255, 0.05);
+        color: rgba(255,255,255,0.5);
+        border: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .action-icons {
+        display: flex;
+        gap: 8px;
+    }
+    .icon-btn {
+        width: 30px;
+        height: 30px;
+        border-radius: 6px;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.05);
+        color: rgba(255,255,255,0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        transition: 0.2s;
+    }
+    .icon-btn:hover {
+        background: rgba(255,255,255,0.1);
+        color: #fff;
+    }
+    .icon-btn.delete:hover {
+        background: rgba(239, 68, 68, 0.2);
+        color: #ef4444;
+        border-color: rgba(239, 68, 68, 0.3);
+    }
+
+    .search-box { transition: 0.3s; }
+    .search-box:focus-within {
+        border-color: #00E676 !important;
+        box-shadow: 0 0 10px rgba(0, 230, 118, 0.2);
+    }
+    .filter-btn { transition: 0.3s; }
+    .filter-btn:hover {
+        background: rgba(255,255,255,0.05);
+        color: #fff;
+    }
+    </style>
+
+<div class="header-actions">
+    <div>
+        <h1 class="page-title">Clientes</h1>
+        <p class="page-subtitle">Gestión completa del padrón de clientes registrados</p>
+    </div>
+    <a href="{% url 'registrar_cliente' %}" class="btn-new">
+        <i class="fa-solid fa-plus"></i> Nuevo Cliente
+    </a>
+</div>
+
+<div class="table-container">
+    <div class="filters-bar">
+        <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass" style="color: rgba(255,255,255,0.4);"></i>
+            <input type="text" id="search-client" placeholder="Buscar por nombre, DNI, o correo...">
+        </div>
+        
+        <button class="filter-btn filter-green active" data-filter="Todos">Todos</button>
+        <button class="filter-btn filter-green" data-filter="Activo">Activo</button>
+        <button class="filter-btn filter-red" data-filter="Vencido">Vencido</button>
+
+    </div>
+
+    <table class="table-clientes">
+        <thead>
+            <tr>
+                <th style="width: 50px;">#</th>
+                <th>CLIENTE</th>
+                <th>DNI</th>
+                <th>EMAIL</th>
+                <th>TELÉFONO</th>
+                <th>MEMBRESÍA</th>
+                <th>ESTADO</th>
+                <th>VENCE EL</th>
+                <th>ACCIONES</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cliente in clientes %}
+            {% with mem=cliente.membresias.last %}
+            <tr>
+                <td style="color: rgba(255,255,255,0.3);">#0{{ forloop.counter }}</td>
+                <td>
+                    <div class="client-profile">
+                        <div class="avatar avatar-{{ cliente.id|add:0|stringformat:'s'|slice:'-1:' }}">
+                            {{ cliente.nombre|make_list|first|upper }}
+                        </div>
+                        <span style="font-weight: 600;">{{ cliente.nombre|title }}</span>
+                    </div>
+                </td>
+                <td>{{ cliente.dni }}</td>
+                <td style="color: rgba(255,255,255,0.5);">{{ cliente.correo|lower }}</td>
+                <td style="color: rgba(255,255,255,0.5);">+51 {{ cliente.telefono }}</td>
+                <td style="font-weight: 500;">{{ mem.tipo|default:"-" }}</td>
+                <td>
+                    {% if mem.estado == 'Activa' %}
+                        <span class="status-badge status-activa">Activo</span>
+                    {% elif mem.estado == 'Vencida' %}
+                        <span class="status-badge status-vencida">Vencido</span>
+                    {% else %}
+                        <span class="status-badge status-none">Sin Plan</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if mem.estado == 'Vencida' %}
+                        <span style="color: #ef4444; font-weight: 600;">{{ mem.fecha_vencimiento|date:"Y-m-d" }}</span>
+                    {% else %}
+                        <span style="color: rgba(255,255,255,0.5);">{{ mem.fecha_vencimiento|date:"Y-m-d"|default:"-" }}</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <div class="action-icons">
+                        
+                        <a href="javascript:void(0);" onclick="verDetalles('{{ cliente.nombre }}', '{{ cliente.dni }}', '{{ cliente.telefono }}', '{{ cliente.correo }}', '{{ mem.tipo|default:"Ninguna" }}', '{{ mem.estado|default:"Sin Plan" }}', '{{ mem.fecha_vencimiento|default:"-" }}')" class="icon-btn" title="Ver Detalles"><i class="fa-regular fa-eye"></i></a>
+                        <a href="{% url 'editar_cliente' cliente.id %}" class="icon-btn" title="Editar"><i class="fa-regular fa-pen-to-square"></i></a>
+                        <a href="javascript:void(0);" onclick="confirmarEliminacion('{% url 'eliminar_cliente' cliente.id %}', '{{ cliente.nombre }}')" class="icon-btn delete" title="Eliminar"><i class="fa-regular fa-trash-can"></i></a>
+
+                    </div>
+                </td>
+            </tr>
+            {% endwith %}
+            {% empty %}
+            <tr>
+                <td colspan="8" style="text-align: center; padding: 50px; color: rgba(255,255,255,0.3);">
+                    <i class="fa-solid fa-users-slash" style="font-size: 32px; margin-bottom: 15px; display: block;"></i>
+                    No hay clientes registrados aún.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    // Filtrado de tabla
+    document.addEventListener("DOMContentLoaded", function() {
+        const searchInput = document.getElementById("search-client");
+        const filterBtns = document.querySelectorAll(".filter-btn");
+        const rows = document.querySelectorAll(".table-clientes tbody tr");
+
+        let currentStatusFilter = "Todos";
+
+        function filterTable() {
+            const query = searchInput.value.toLowerCase();
+
+            rows.forEach(row => {
+                if(row.children.length === 1) return; // Empty message row
+
+                const textContent = row.textContent.toLowerCase();
+                const statusBadge = row.querySelector(".status-badge");
+                const statusText = statusBadge ? statusBadge.textContent.trim() : "";
+
+                const matchesSearch = textContent.includes(query);
+                let matchesStatus = true;
+                
+                if (currentStatusFilter === "Activo") {
+                    matchesStatus = (statusText === "Activo");
+                } else if (currentStatusFilter === "Vencido") {
+                    matchesStatus = (statusText === "Vencido");
+                }
+
+                if (matchesSearch && matchesStatus) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        }
+
+        searchInput.addEventListener("input", filterTable);
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener("click", function() {
+                // Remove active classes
+                filterBtns.forEach(b => {
+                    b.classList.remove("active");
+                });
+                // Add active to clicked
+                this.classList.add("active");
+                
+                currentStatusFilter = this.getAttribute("data-filter");
+                filterTable();
+            });
+        });
+    });
+
+    function confirmarEliminacion(url, nombre) {
+        Swal.fire({
+            title: '¿Eliminar Cliente?',
+            html: `<div style="color: rgba(255,255,255,0.7); font-size: 15px;">Estás a punto de borrar a:<br><span class="swal-item-highlight">${nombre}</span><br><br>Esta acción no se puede deshacer.</div>`,
+            icon: 'warning',
+            iconColor: '#ef4444',
+            showCancelButton: true,
+            backdrop: `rgba(0,0,0,0.85)`,
+            customClass: {
+                popup: 'swal-glass-popup',
+                title: 'swal-neon-title',
+                confirmButton: 'swal-btn-neon-red',
+                cancelButton: 'swal-btn-glass-cancel'
+            },
+            buttonsStyling: false,
+            confirmButtonText: '<i class="fa-solid fa-trash-can" style="margin-right: 8px;"></i> Sí, eliminar',
+            cancelButtonText: 'Cancelar',
+            showClass: { popup: 'animate__animated animate__zoomIn animate__faster' },
+            hideClass: { popup: 'animate__animated animate__zoomOut animate__faster' }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = url;
+            }
+        });
+    }
+
+        function verDetalles(nombre, dni, telefono, correo, plan, estado, exp) {
+        let colorEstado = estado === 'Activo' ? '#00E676' : (estado === 'Vencida' ? '#ef4444' : '#6b7280');
+        let badgeEstado = `<span style="background: ${colorEstado}15; color: ${colorEstado}; border: 1px solid ${colorEstado}40; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold;">${estado}</span>`;
+        let inicial = nombre.charAt(0).toUpperCase();
+
+        Swal.fire({
+            title: '¿Eliminar Cliente?',
+            html: `<div style="color: rgba(255,255,255,0.7); font-size: 15px;">Estás a punto de borrar a:<br><span class="swal-item-highlight">${inicial}</span><br><br>Esta acción no se puede deshacer.</div>`,
+            icon: 'warning',
+            iconColor: '#ef4444',
+            showCancelButton: true,
+            backdrop: `rgba(0,0,0,0.85)`,
+            customClass: {
+                popup: 'swal-glass-popup',
+                title: 'swal-neon-title',
+                confirmButton: 'swal-btn-neon-red',
+                cancelButton: 'swal-btn-glass-cancel'
+            },
+            buttonsStyling: false,
+            confirmButtonText: '<i class="fa-solid fa-trash-can" style="margin-right: 8px;"></i> Sí, eliminar',
+            cancelButtonText: 'Cancelar',
+            showClass: { popup: 'animate__animated animate__zoomIn animate__faster' },
+            hideClass: { popup: 'animate__animated animate__zoomOut animate__faster' }
+        });
+    }
+</script>
+{% endblock %}
+

@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}EcoFit - Editar Membresía{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Editar Membresía</h1>
+<p class="page-subtitle">Modifica los detalles de la membresía para {{ membresia.cliente.nombre }}.</p>
+
+{% if error %}
+    <div class="alert alert-danger">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <span>{{ error }}</span>
+    </div>
+{% endif %}
+
+<div class="form-card">
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label class="form-label" for="tipo_membresia">Tipo de Membresía / Promoción</label>
+            <select id="tipo_membresia" name="tipo_membresia" class="form-control" required>
+                <option value="Básica" {% if membresia.tipo == 'Básica' %}selected{% endif %}>Básica</option>
+                <option value="Premium" {% if membresia.tipo == 'Premium' %}selected{% endif %}>Premium</option>
+                <option value="VIP" {% if membresia.tipo == 'VIP' %}selected{% endif %}>VIP</option>
+            </select>
+        </div>
+        
+        <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div>
+                <label class="form-label" for="fecha_inicio">Fecha de Inicio</label>
+                <input type="date" id="fecha_inicio" name="fecha_inicio" class="form-control" required value="{{ membresia.fecha_inicio|date:'Y-m-d' }}">
+            </div>
+            <div>
+                <label class="form-label" for="fecha_vencimiento">Fecha de Vencimiento</label>
+                <input type="date" id="fecha_vencimiento" name="fecha_vencimiento" class="form-control" required value="{{ membresia.fecha_vencimiento|date:'Y-m-d' }}">
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label" for="estado">Estado</label>
+            <select id="estado" name="estado" class="form-control" required>
+                <option value="Activa" {% if membresia.estado == 'Activa' %}selected{% endif %}>Activa</option>
+                <option value="Vencida" {% if membresia.estado == 'Vencida' %}selected{% endif %}>Vencida</option>
+            </select>
+        </div>
+
+        <div class="flex gap-2" style="margin-top: 30px;">
+            <button type="submit" class="btn btn-primary" style="flex: 1;">
+                <i class="fa-solid fa-save"></i> Guardar Cambios
+            </button>
+            <a href="{% url 'listar_membresias' %}" class="btn btn-secondary" style="flex: 1;">
+                <i class="fa-solid fa-xmark"></i> Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

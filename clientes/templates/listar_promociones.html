@@ -1,0 +1,631 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}EcoFit - Promociones{% endblock %}
+{% block breadcrumb %}Promociones{% endblock %}
+
+{% block content %}
+<style>
+    .page-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 32px;
+        color: #fff;
+        margin: 0;
+    }
+    .page-subtitle {
+        color: rgba(255,255,255,0.5);
+        font-size: 14px;
+        margin-bottom: 30px;
+    }
+    .header-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 30px;
+    }
+    .btn-new {
+        background: #00E676;
+        color: #000;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 14px;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: 0.2s;
+    }
+    .btn-new:hover {
+        background: #00c766;
+        box-shadow: 0 0 15px rgba(0, 230, 118, 0.4);
+    }
+    
+    .glass-panel {
+        background: rgba(28, 33, 40, 0.65);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255,255,255,0.05);
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        margin-bottom: 30px;
+    }
+
+    .carousel-container {
+        display: flex;
+        gap: 20px;
+        overflow-x: auto;
+        padding-bottom: 15px;
+    }
+    .carousel-container::-webkit-scrollbar {
+        height: 6px;
+    }
+    .carousel-container::-webkit-scrollbar-thumb {
+        background: rgba(255,255,255,0.1);
+        border-radius: 4px;
+    }
+
+    
+    
+    .promo-card {
+        min-width: 220px;
+        height: 220px;
+        border-radius: 16px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        flex-shrink: 0;
+        border: 1px solid rgba(255,255,255,0.05);
+        transition: all 0.3s ease;
+    }
+    .promo-card:hover {
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+        border-color: rgba(255,255,255,0.2);
+    }
+    .promo-overlay-actions {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0,0,0,0.7);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        opacity: 0; z-index: 10;
+        transition: 0.3s;
+        backdrop-filter: blur(3px);
+        gap: 10px;
+    }
+    .promo-card:hover .promo-overlay-actions {
+        opacity: 1;
+    }
+    
+    .btn-kit {
+        background: #00E676;
+        color: #000;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 12px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: 0.2s;
+    }
+    .btn-kit:hover { background: #00c766; transform: scale(1.05); }
+    
+    .btn-del-flyer {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: rgba(239, 68, 68, 0.2);
+        color: #ef4444;
+        border: 1px solid rgba(239, 68, 68, 0.4);
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: 0.2s;
+        opacity: 0; z-index: 10;
+    }
+    .promo-card:hover .btn-del-flyer { opacity: 1; }
+    .btn-del-flyer:hover { background: #ef4444; color: #fff; }
+
+    .upload-card.dragover {
+        background: rgba(0, 230, 118, 0.1) !important;
+        border-color: #00E676 !important;
+        border-style: solid;
+        transform: scale(1.05);
+    }
+
+    .promo-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .promo-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        height: 100%;
+    }
+    
+    .upload-card {
+        min-width: 220px;
+        height: 220px;
+        border-radius: 16px;
+        border: 2px dashed rgba(255,255,255,0.2);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+    .upload-card i {
+        transition: all 0.3s ease;
+    }
+    .upload-card span {
+        transition: all 0.3s ease;
+    }
+    .upload-card:hover {
+        background: rgba(0, 230, 118, 0.05);
+        border-color: #00E676;
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 230, 118, 0.15);
+    }
+    .upload-card:hover i {
+        color: #00E676 !important;
+        transform: scale(1.2);
+    }
+    .upload-card:hover span {
+        color: #00E676 !important;
+        font-weight: 600;
+    }
+
+
+    .table-promos {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .table-promos th {
+        text-align: left;
+        color: rgba(255,255,255,0.3);
+        font-size: 11px;
+        text-transform: uppercase;
+        padding-bottom: 15px;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+    .table-promos td {
+        padding: 18px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.02);
+        color: #fff;
+        font-size: 13px;
+        vertical-align: middle;
+    }
+    .table-promos tr:hover td {
+        background: rgba(255,255,255,0.01);
+    }
+    
+    .status-badge {
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+    .status-activa {
+        background: rgba(0, 230, 118, 0.1);
+        color: #00E676;
+        border: 1px solid rgba(0, 230, 118, 0.3);
+    }
+    .status-inactiva {
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+    
+    .icon-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.05);
+        color: rgba(255,255,255,0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        transition: 0.2s;
+    }
+    .icon-btn:hover {
+        background: rgba(255,255,255,0.1);
+        color: #fff;
+    }
+    .icon-btn.delete:hover {
+        background: rgba(239, 68, 68, 0.2);
+        color: #ef4444;
+        border-color: rgba(239, 68, 68, 0.3);
+    }
+    .icon-btn.whatsapp:hover {
+        background: rgba(37, 211, 102, 0.2);
+        color: #25D366;
+        border-color: rgba(37, 211, 102, 0.3);
+    }
+
+    .swal2-validation-message {
+        background: rgba(239, 68, 68, 0.1) !important;
+        color: #ef4444 !important;
+        border: 1px solid rgba(239, 68, 68, 0.3) !important;
+        border-radius: 8px !important;
+        font-size: 13px !important;
+    }
+    .swal2-confirm {
+        color: #000 !important;
+        font-weight: 700 !important;
+    }
+</style>
+
+
+<div class="header-actions">
+    <div>
+        <h1 class="page-title">Promociones</h1>
+        <p class="page-subtitle">Administración de campañas, descuentos y material publicitario</p>
+    </div>
+    <a href="{% url 'crear_promocion' %}" class="btn-new">
+        <i class="fa-solid fa-plus"></i> Nueva Promoción
+    </a>
+</div>
+
+<div class="glass-panel">
+    <h3 style="margin-top: 0; color: #fff; font-family: 'Outfit'; font-size: 16px; margin-bottom: 20px;">
+        <i class="fa-solid fa-images" style="color: rgba(255,255,255,0.4); margin-right: 8px;"></i> Flyers y Banners Publicitarios
+    </h3>
+    
+    <div class="carousel-container">
+        <!-- Any images uploaded to DB -->
+        {% for p in promociones %}
+            {% if p.imagen %}
+            <div class="promo-card">
+                <img src="{{ p.imagen.url }}" class="promo-img">
+                <div class="promo-overlay-actions">
+                    <form action="{% url 'eliminar_flyer_promocion' p.id %}" method="POST" style="position: absolute; top: 10px; right: 10px;" class="form-del-flyer">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-del-flyer" title="Eliminar Flyer" style="opacity: 1; position: static;"><i class="fa-solid fa-trash"></i></button>
+                    </form>
+                    <button onclick="abrirKitSocial('{{ p.nombre|escapejs }}', '{{ p.descuento_porcentaje|floatformat:0 }}', '{{ p.imagen.url }}')" class="btn-kit">
+                        <i class="fa-solid fa-share-nodes"></i> Kit Social
+                    </button>
+                </div>
+            </div>
+            {% endif %}
+        {% endfor %}
+
+                        <div class="upload-card" id="dropzone" onclick="document.getElementById('file-input').click()">
+            <i class="fa-solid fa-cloud-arrow-up" style="font-size: 32px; color: rgba(255,255,255,0.3); margin-bottom: 12px; pointer-events: none;"></i>
+            <span style="color: rgba(255,255,255,0.4); font-size: 14px; pointer-events: none;">Arrastra o haz clic para subir flyer</span>
+        </div>
+
+        <form id="quick-promo-form" action="{% url 'crear_promocion' %}" method="POST" enctype="multipart/form-data" style="display: none;">
+            {% csrf_token %}
+            <input type="file" id="file-input" name="imagen" accept="image/*">
+            <input type="hidden" id="promo-nombre" name="nombre">
+            <input type="hidden" id="promo-descuento" name="descuento_porcentaje">
+            <input type="hidden" id="promo-tipo" name="tipo">
+            <input type="hidden" name="activa" value="1">
+        </form>
+    </div>
+</div>
+
+<div class="glass-panel">
+    <h3 style="margin-top: 0; color: #fff; font-family: 'Outfit'; font-size: 16px; margin-bottom: 20px;">Campañas Activas</h3>
+    
+    <table class="table-promos">
+        <thead>
+            <tr>
+                <th>NOMBRE DE CAMPAÑA</th>
+                <th>TIPO</th>
+                <th>DESCUENTO</th>
+                <th>ESTADO</th>
+                <th>ACCIONES</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in promociones %}
+            <tr>
+                <td style="font-weight: 600;">{{ p.nombre }}</td>
+                <td style="color: rgba(255,255,255,0.5);">{{ p.tipo|default:"Especial" }}</td>
+                <td style="color: #00E676; font-size: 14px; font-weight: 800;">{{ p.descuento_porcentaje|floatformat:0 }}%</td>
+                <td>
+                    {% if p.activa %}
+                        <span class="status-badge status-activa">Activa</span>
+                    {% else %}
+                        <span class="status-badge status-inactiva">Inactiva</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <div style="display: flex; gap: 8px;">
+                        <a href="#" onclick="lanzarCampana('{{ p.nombre }}', '{{ p.descuento_porcentaje|floatformat:0 }}')" class="icon-btn whatsapp" title="Lanzar Campaña por WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+                        <a href="{% url 'editar_promocion' p.id %}" class="icon-btn" title="Editar"><i class="fa-regular fa-pen-to-square"></i></a>
+                        <form action="{% url 'eliminar_promocion' p.id %}" method="POST" style="display: inline;" class="delete-form" data-name="{{ p.nombre }}">
+                            {% csrf_token %}
+                            <button type="button" class="icon-btn delete btn-delete"><i class="fa-regular fa-trash-can"></i></button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" style="text-align: center; color: rgba(255,255,255,0.3); padding: 40px;">
+                    <i class="fa-solid fa-tag" style="font-size: 32px; margin-bottom: 10px; display: block;"></i>
+                    No hay promociones registradas.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.querySelectorAll('.btn-delete').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const form = this.closest('form');
+            const promoName = form.getAttribute('data-name');
+            
+            Swal.fire({
+            title: '¿Eliminar Campaña?',
+            html: `<div style="color: rgba(255,255,255,0.7); font-size: 15px;">Estás a punto de borrar a:<br><span class="swal-item-highlight">${promoName}</span><br><br>Esta acción no se puede deshacer.</div>`,
+            icon: 'warning',
+            iconColor: '#ef4444',
+            showCancelButton: true,
+            backdrop: `rgba(0,0,0,0.85)`,
+            customClass: {
+                popup: 'swal-glass-popup',
+                title: 'swal-neon-title',
+                confirmButton: 'swal-btn-neon-red',
+                cancelButton: 'swal-btn-glass-cancel'
+            },
+            buttonsStyling: false,
+            confirmButtonText: '<i class="fa-solid fa-trash-can" style="margin-right: 8px;"></i> Sí, eliminar',
+            cancelButtonText: 'Cancelar',
+            showClass: { popup: 'animate__animated animate__zoomIn animate__faster' },
+            hideClass: { popup: 'animate__animated animate__zoomOut animate__faster' }
+        }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        });
+    });
+
+        
+    
+    document.querySelectorAll('.form-del-flyer').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            Swal.fire({
+            title: '¿Eliminar Flyer?',
+            html: `<div style="color: rgba(255,255,255,0.7); font-size: 15px;">Estás a punto de borrar a:<br><span class="swal-item-highlight">este flyer</span><br><br>Esta acción no se puede deshacer.</div>`,
+            icon: 'warning',
+            iconColor: '#ef4444',
+            showCancelButton: true,
+            backdrop: `rgba(0,0,0,0.85)`,
+            customClass: {
+                popup: 'swal-glass-popup',
+                title: 'swal-neon-title',
+                confirmButton: 'swal-btn-neon-red',
+                cancelButton: 'swal-btn-glass-cancel'
+            },
+            buttonsStyling: false,
+            confirmButtonText: '<i class="fa-solid fa-trash-can" style="margin-right: 8px;"></i> Sí, eliminar',
+            cancelButtonText: 'Cancelar',
+            showClass: { popup: 'animate__animated animate__zoomIn animate__faster' },
+            hideClass: { popup: 'animate__animated animate__zoomOut animate__faster' }
+        }).then((result) => {
+                if (result.isConfirmed) {
+                    this.submit();
+                }
+            });
+        });
+    });
+
+    function abrirKitSocial(nombre, descuento, imgUrl) {
+        const copyText = `💥 ¡LLEGÓ TU MOMENTO DE TRANSFORMARTE! 💥
+
+¿Ya sabes? En EcoFit acabamos de lanzar nuestra nueva campaña *${nombre}*.
+
+¿Postergaste el gym? Ya no hay excusas. Inscríbete HOY y obtén automáticamente un 🎁 *${descuento}% DE DESCUENTO* en tu plan.
+
+🏆 Ambiente premium, máquinas top y el mejor staff de trainers.
+
+📍 Te esperamos en EcoFit. 
+📱 Muestra este mensaje en recepción y haz válido tu descuento.
+
+#Gym #EcoFit #Fitness #Promocion #Salud`;
+
+        Swal.fire({
+            title: 'Kit de Redes Sociales',
+            html: `
+                <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 15px; text-align: left;">
+                    <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; text-align: center;">
+                        <img src="${imgUrl}" style="max-height: 200px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">
+                    </div>
+                    <p style="color: rgba(255,255,255,0.5); font-size: 13px; margin: 0;">Texto auto-generado para Facebook / WhatsApp:</p>
+                    <textarea id="copyText" style="width: 100%; height: 180px; background: rgba(0,0,0,0.3); color: #fff; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 15px; font-family: inherit; font-size: 13px; resize: none; box-sizing: border-box;">${copyText}</textarea>
+                </div>
+            `,
+            background: 'rgba(28, 33, 40, 0.85)',
+            color: '#fff',
+            showCancelButton: true,
+            confirmButtonText: '<i class="fa-regular fa-copy"></i> Copiar Texto',
+            cancelButtonText: 'Cerrar',
+            buttonsStyling: false,
+            backdrop: `rgba(0,0,0,0.85)`,
+            customClass: { 
+                popup: 'swal-glass-popup',
+                title: 'swal-neon-title',
+                confirmButton: 'swal-btn-neon-red',
+                cancelButton: 'swal-btn-glass-cancel'
+            },
+            showClass: { popup: 'animate__animated animate__zoomIn animate__faster' },
+            hideClass: { popup: 'animate__animated animate__zoomOut animate__faster' },
+            preConfirm: () => {
+                const textarea = document.getElementById('copyText');
+                textarea.select();
+                document.execCommand('copy');
+                Swal.fire({
+                    title: '¡Copiado!',
+                    text: 'El texto está en tu portapapeles. Pégalo en tus redes sociales.',
+                    icon: 'success',
+                    background: 'rgba(28, 33, 40, 0.85)',
+                    color: '#fff',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    customClass: { popup: 'swal-glass-popup' }
+                });
+                return false;
+            }
+        });
+    }
+
+    function lanzarCampana(nombre, descuento) {
+        const clientesVencidos = [
+            { nombre: "Carlos Martínez", telefono: "51987654321", dias: 5 },
+            { nombre: "Lucía Fernández", telefono: "51912345678", dias: 12 },
+            { nombre: "Jorge Luis Pérez", telefono: "51999888777", dias: 2 }
+        ];
+
+        let mensajeEncoded = encodeURIComponent(`¡Hola! Te extrañamos en EcoFit. Vuelve hoy y aprovecha un *${descuento}% de descuento* con nuestra campaña *${nombre}*.`);
+
+        let listaHTML = clientesVencidos.map(c => `
+            <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 10px 15px; border-radius: 8px; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.05);">
+                <div style="text-align: left;">
+                    <span style="color: #fff; font-weight: 600; font-size: 14px; display: block;">${c.nombre}</span>
+                    <span style="color: #ef4444; font-size: 11px;">Venció hace ${c.dias} días</span>
+                </div>
+                <a href="https://wa.me/${c.telefono}?text=${mensajeEncoded}" target="_blank" 
+                   style="background: rgba(37, 211, 102, 0.1); color: #25D366; border: 1px solid rgba(37, 211, 102, 0.3); padding: 6px 12px; border-radius: 20px; text-decoration: none; font-size: 12px; font-weight: bold; transition: 0.2s;"
+                   onmouseover="this.style.background='#25D366'; this.style.color='#000'"
+                   onmouseout="this.style.background='rgba(37, 211, 102, 0.1)'; this.style.color='#25D366'">
+                   <i class="fa-brands fa-whatsapp"></i> Enviar
+                </a>
+            </div>
+        `).join('');
+
+        Swal.fire({
+            title: 'Asistente WhatsApp',
+            html: `
+                <div style="text-align: left; font-size: 14px; margin-top: 15px;">
+                    <p style="color: rgba(255,255,255,0.6); margin-bottom: 15px;">Abre WhatsApp Web con un solo clic para cada cliente en riesgo de fuga.</p>
+                    
+                    <div style="background: rgba(0,0,0,0.3); border-radius: 8px; padding: 15px; max-height: 250px; overflow-y: auto;">
+                        ${listaHTML}
+                    </div>
+                </div>
+            `,
+            background: 'rgba(28, 33, 40, 0.85)',
+            color: '#fff',
+            showConfirmButton: false,
+            showCloseButton: true,
+            backdrop: `rgba(0,0,0,0.85)`,
+            customClass: {
+                popup: 'swal-glass-popup',
+                title: 'swal-neon-title'
+            },
+            showClass: { popup: 'animate__animated animate__zoomIn animate__faster' },
+            hideClass: { popup: 'animate__animated animate__zoomOut animate__faster' }
+        });
+    }
+
+    // Drag and Drop Logic
+    const dropzone = document.getElementById('dropzone');
+    const fileInput = document.getElementById('file-input');
+
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropzone.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropzone.addEventListener(eventName, () => dropzone.classList.add('dragover'), false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropzone.addEventListener(eventName, () => dropzone.classList.remove('dragover'), false);
+    });
+
+    dropzone.addEventListener('drop', handleDrop, false);
+    fileInput.addEventListener('change', function() {
+        if (this.files.length > 0) handleFiles(this.files);
+    });
+
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        if(files.length > 0) {
+            fileInput.files = files; // Assign to hidden input
+            handleFiles(files);
+        }
+    }
+
+    function handleFiles(files) {
+        const file = files[0];
+        if (!file.type.startsWith('image/')) {
+            Swal.fire('Error', 'Por favor, sube un archivo de imagen.', 'error');
+            return;
+        }
+
+        // Show SweetAlert to get Name and Discount
+        Swal.fire({
+            title: 'Configurar Promoción',
+            html: `<div style="color: rgba(255,255,255,0.7); font-size: 15px;">Estás a punto de borrar a:<br><span class="swal-item-highlight">${file.name}</span><br><br>Esta acción no se puede deshacer.</div>`,
+            icon: 'warning',
+            iconColor: '#ef4444',
+            showCancelButton: true,
+            backdrop: `rgba(0,0,0,0.85)`,
+            customClass: {
+                popup: 'swal-glass-popup',
+                title: 'swal-neon-title',
+                confirmButton: 'swal-btn-neon-red',
+                cancelButton: 'swal-btn-glass-cancel'
+            },
+            buttonsStyling: false,
+            confirmButtonText: '<i class="fa-solid fa-trash-can" style="margin-right: 8px;"></i> Sí, eliminar',
+            cancelButtonText: 'Cancelar',
+            showClass: { popup: 'animate__animated animate__zoomIn animate__faster' },
+            hideClass: { popup: 'animate__animated animate__zoomOut animate__faster' }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('promo-nombre').value = result.value.nombre;
+                document.getElementById('promo-descuento').value = result.value.desc;
+                document.getElementById('promo-tipo').value = result.value.tipo;
+                document.getElementById('quick-promo-form').submit();
+            } else {
+                fileInput.value = ""; // Clear file if cancelled
+            }
+        });
+    }
+
+</script>
+{% endblock %}

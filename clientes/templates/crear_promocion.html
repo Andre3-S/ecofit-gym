@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}EcoFit - Nueva Promoción{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Crear Nueva Promoción</h1>
+<p class="page-subtitle">Configura el porcentaje de descuento y los detalles de la campaña.</p>
+
+<div class="form-card">
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label class="form-label" for="nombre">Nombre de la Promoción</label>
+            <input type="text" id="nombre" name="nombre" class="form-control" required placeholder="Ej. Cyber Days Gym">
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label" for="descripcion">Descripción (Opcional)</label>
+            <textarea id="descripcion" name="descripcion" class="form-control" rows="3" placeholder="Detalles de la campaña..."></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label" for="descuento_porcentaje">Porcentaje de Descuento (%)</label>
+            <input type="number" id="descuento_porcentaje" name="descuento_porcentaje" class="form-control" required placeholder="Ej. 15.00" step="0.01" min="0.01" max="100">
+        </div>
+        
+        <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+            <input type="checkbox" id="activa" name="activa" checked style="width: 20px; height: 20px;">
+            <label class="form-label" for="activa" style="margin-bottom: 0;">Activar Promoción Inmediatamente</label>
+        </div>
+        
+        <div class="flex gap-2" style="margin-top: 30px;">
+            <button type="submit" class="btn btn-primary" style="flex: 1;">
+                <i class="fa-solid fa-save"></i> Guardar Promoción
+            </button>
+            <a href="{% url 'listar_promociones' %}" class="btn btn-secondary" style="flex: 1;">
+                <i class="fa-solid fa-xmark"></i> Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}
