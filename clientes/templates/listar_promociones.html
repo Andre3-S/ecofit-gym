@@ -597,24 +597,40 @@
         }
 
         // Show SweetAlert to get Name and Discount
-        Swal.fire({
+                Swal.fire({
             title: 'Configurar Promoción',
-            html: `<div style="color: rgba(255,255,255,0.7); font-size: 15px;">Estás a punto de borrar a:<br><span class="swal-item-highlight">${file.name}</span><br><br>Esta acción no se puede deshacer.</div>`,
-            icon: 'warning',
-            iconColor: '#ef4444',
+            html: `
+                <input id="swal-input-nombre" class="swal2-input" placeholder="Nombre (ej. CyberWeek)" style="background: rgba(0,0,0,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.1); width: 85%;">
+                <input id="swal-input-desc" type="number" class="swal2-input" placeholder="% Descuento (ej. 20)" style="background: rgba(0,0,0,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.1); width: 85%;">
+                <select id="swal-input-tipo" class="swal2-input" style="background: rgba(0,0,0,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.1); width: 85%;">
+                    <option value="Porcentaje" style="background: #1c2128;">Descuento %</option>
+                    <option value="Monto Fijo" style="background: #1c2128;">Monto Fijo</option>
+                    <option value="2x1" style="background: #1c2128;">Promo 2x1</option>
+                    <option value="Especial" style="background: #1c2128;">Especial</option>
+                </select>
+                <p style="color: rgba(255,255,255,0.4); font-size: 12px; margin-top: 15px;">Archivo seleccionado: ${file.name}</p>
+            `,
+            background: 'rgba(28, 33, 40, 0.85)',
+            color: '#fff',
             showCancelButton: true,
+            confirmButtonText: 'Subir y Activar',
+            cancelButtonText: 'Cancelar',
             backdrop: `rgba(0,0,0,0.85)`,
             customClass: {
                 popup: 'swal-glass-popup',
                 title: 'swal-neon-title',
-                confirmButton: 'swal-btn-neon-red',
+                confirmButton: 'swal-btn-neon-green',
                 cancelButton: 'swal-btn-glass-cancel'
             },
-            buttonsStyling: false,
-            confirmButtonText: '<i class="fa-solid fa-trash-can" style="margin-right: 8px;"></i> Sí, eliminar',
-            cancelButtonText: 'Cancelar',
-            showClass: { popup: 'animate__animated animate__zoomIn animate__faster' },
-            hideClass: { popup: 'animate__animated animate__zoomOut animate__faster' }
+            preConfirm: () => {
+                const nombre = document.getElementById('swal-input-nombre').value;
+                const desc = document.getElementById('swal-input-desc').value;
+                const tipo = document.getElementById('swal-input-tipo').value;
+                if (!nombre || !desc) {
+                    Swal.showValidationMessage('Por favor completa todos los campos');
+                }
+                return { nombre: nombre, desc: desc, tipo: tipo }
+            }
         }).then((result) => {
             if (result.isConfirmed) {
                 document.getElementById('promo-nombre').value = result.value.nombre;
