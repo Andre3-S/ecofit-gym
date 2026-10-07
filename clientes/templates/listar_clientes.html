@@ -310,5 +310,141 @@
     </table>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function confirmarEliminacion(url, nombre) {
+        Swal.fire({
+            title: '¿Eliminar Cliente?',
+            html: `<div style="color: rgba(255,255,255,0.7); font-size: 15px;">Estás a punto de borrar a:<br><span class="swal-item-highlight">${nombre}</span><br><br>Esta acción no se puede deshacer.</div>`,
+            icon: 'warning',
+            iconColor: '#ef4444',
+            showCancelButton: true,
+            backdrop: `rgba(0,0,0,0.85)`,
+            customClass: {
+                popup: 'swal-glass-popup',
+                title: 'swal-neon-title',
+                confirmButton: 'swal-btn-neon-red',
+                cancelButton: 'swal-btn-glass-cancel'
+            },
+            buttonsStyling: false,
+            confirmButtonText: '<i class="fa-solid fa-trash-can" style="margin-right: 8px;"></i> Sí, eliminar',
+            cancelButtonText: 'Cancelar',
+            showClass: { popup: 'animate__animated animate__zoomIn animate__faster' },
+            hideClass: { popup: 'animate__animated animate__zoomOut animate__faster' }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = url;
+            }
+        });
+    }
+
+    function verDetalles(nombre, dni, telefono, correo, plan, estado, exp) {
+        let colorEstado = estado === 'Activo' ? '#00E676' : (estado === 'Vencida' ? '#ef4444' : '#6b7280');
+        let badgeEstado = `<span style="background: ${colorEstado}15; color: ${colorEstado}; border: 1px solid ${colorEstado}40; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold;">${estado}</span>`;
+        let inicial = nombre.charAt(0).toUpperCase();
+
+        Swal.fire({
+            title: 'Perfil del Cliente',
+            html: `
+                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px; text-align: left; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                    <div style="width: 50px; height: 50px; background: #00E676; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; color: #000;">
+                        ${inicial}
+                    </div>
+                    <div>
+                        <h3 style="margin: 0; color: #fff; font-size: 18px;">${nombre}</h3>
+                        <p style="margin: 5px 0 0; color: rgba(255,255,255,0.5); font-size: 13px;">DNI: ${dni}</p>
+                    </div>
+                </div>
+                
+                <div style="text-align: left; display: grid; gap: 12px;">
+                    <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;">
+                        <span style="color: rgba(255,255,255,0.5); font-size: 13px;"><i class="fa-solid fa-phone" style="width: 20px;"></i> Teléfono</span>
+                        <span style="color: #fff; font-size: 14px;">+51 ${telefono}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;">
+                        <span style="color: rgba(255,255,255,0.5); font-size: 13px;"><i class="fa-solid fa-envelope" style="width: 20px;"></i> Correo</span>
+                        <span style="color: #fff; font-size: 14px;">${correo}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;">
+                        <span style="color: rgba(255,255,255,0.5); font-size: 13px;"><i class="fa-solid fa-dumbbell" style="width: 20px;"></i> Plan Actual</span>
+                        <span style="color: #fff; font-size: 14px; font-weight: 600;">${plan}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;">
+                        <span style="color: rgba(255,255,255,0.5); font-size: 13px;"><i class="fa-solid fa-circle-check" style="width: 20px;"></i> Estado</span>
+                        ${badgeEstado}
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: rgba(255,255,255,0.5); font-size: 13px;"><i class="fa-regular fa-calendar-xmark" style="width: 20px;"></i> Vencimiento</span>
+                        <span style="color: #fff; font-size: 14px;">${exp}</span>
+                    </div>
+                </div>
+            `,
+            background: 'rgba(28, 33, 40, 0.85)',
+            color: '#fff',
+            showConfirmButton: true,
+            confirmButtonText: 'Cerrar',
+            buttonsStyling: false,
+            backdrop: `rgba(0,0,0,0.85)`,
+            customClass: {
+                popup: 'swal-glass-popup',
+                title: 'swal-neon-title',
+                confirmButton: 'swal-btn-glass-cancel'
+            }
+        });
+    }
+
+    // Filtrado de tabla
+    document.addEventListener("DOMContentLoaded", function() {
+        const searchInput = document.getElementById("search-client");
+        const filterBtns = document.querySelectorAll(".filter-btn");
+        const rows = document.querySelectorAll(".table-clientes tbody tr");
+
+        let currentStatusFilter = "Todos";
+
+        function filterTable() {
+            if(!searchInput) return;
+            const query = searchInput.value.toLowerCase();
+
+            rows.forEach(row => {
+                if(row.children.length === 1) return; // Empty message row
+
+                const textContent = row.textContent.toLowerCase();
+                const statusBadge = row.querySelector(".status-badge");
+                const statusText = statusBadge ? statusBadge.textContent.trim() : "";
+
+                const matchesSearch = textContent.includes(query);
+                let matchesStatus = true;
+                
+                if (currentStatusFilter === "Activo") {
+                    matchesStatus = (statusText === "Activo");
+                } else if (currentStatusFilter === "Vencido") {
+                    matchesStatus = (statusText === "Vencido");
+                }
+
+                if (matchesSearch && matchesStatus) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        }
+
+        if(searchInput) searchInput.addEventListener("input", filterTable);
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener("click", function() {
+                // Remove active classes
+                filterBtns.forEach(b => {
+                    b.classList.remove("active");
+                });
+                // Add active to clicked
+                this.classList.add("active");
+                
+                currentStatusFilter = this.getAttribute("data-filter");
+                filterTable();
+            });
+        });
+    });
+</script>
 {% endblock %}
 
